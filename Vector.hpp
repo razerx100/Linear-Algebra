@@ -57,7 +57,7 @@ public:
         return y;
     }
     T Magnitude() const noexcept {
-        return std::sqrt((x * x) + (y + y));
+        return std::sqrt((x * x) + (y * y));
     }
     void Normalise() noexcept {
         T length = Magnitude();
