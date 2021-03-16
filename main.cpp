@@ -4,6 +4,8 @@
 int main() {
     Vec2 v = {2.5f, 6.6f};
     Vec2 v2 = v;
-    std::cout << (v2 / 2.0f) << v2.Magnitude();
+    std::cout << "Co-ordinates : " << v2;
+    v2.Rotate(M_PI);
+    std::cout << "Co-ordinates after rotation : " << v2;
     return 0;
 }

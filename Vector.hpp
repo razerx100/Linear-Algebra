@@ -3,15 +3,18 @@
 #include <initializer_list>
 #include <ostream>
 #include <cmath>
+#include <type_traits>
 
-template<typename T>
+template<typename T> concept C1 = std::is_same<T, float>::value || std::is_same<T, double>::value;
+
+template<C1 T>
 class _Vec2 {
 public:
     _Vec2(T x, T y) noexcept : x(x), y(y) {}
-    _Vec2(std::initializer_list<T> list) : x(*list.begin()), y(*(list.begin() + 1)) {}
-    template<typename E>
+    _Vec2(std::initializer_list<T> list) noexcept : x(*list.begin()), y(*(list.begin() + 1)) {}
+    template<C1 E>
     _Vec2(const _Vec2<E>& v) noexcept : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
-    template<typename E>
+    template<C1 E>
     _Vec2<T>& operator=(const _Vec2<E>& v) noexcept {
         x = static_cast<T>(v.x);
         y = static_cast<T>(v.y);
@@ -69,6 +72,16 @@ public:
         T length = Magnitude();
         x /= length;
         y /= length;
+    }
+    template<C1 E>
+    void Rotate(E angle) noexcept {
+        T sine = std::sin(angle);
+        T cosine = std::cos(angle);
+        
+        T old_x = x, old_y = y;
+        
+        x = old_x * cosine - old_y * sine;
+        y = old_x * sine + old_y * cosine;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const _Vec2<T>& v){
