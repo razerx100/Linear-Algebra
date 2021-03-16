@@ -49,6 +49,12 @@ public:
     _Vec2<T> operator/(T s) noexcept {
         return _Vec2(*this).operator/=(s);
     }
+    bool operator==(const _Vec2<T>& v) const noexcept {
+        return x == v.x && y == v.y;
+    }
+    bool operator!=(const _Vec2<T>& v) const noexcept {
+        return x != v.x || y != v.y;
+    }
 
     const T& GetX() const noexcept {
         return x;
