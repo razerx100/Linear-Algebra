@@ -1,11 +1,12 @@
 #include <iostream>
-#include "Vector.hpp"
+#include "Mat3x3.hpp"
 
 int main() {
-    Vec2 v = {2.5f, 6.6f};
-    Vec2 v2 = v;
-    std::cout << "Co-ordinates : " << v2;
-    v2.Rotate(M_PI);
-    std::cout << "Co-ordinates after rotation : " << v2;
+    Vec2 vec = {5, 7};
+    Vec2 vR = vec;
+    vR.Rotate(M_PI / 2);
+    std::cout << "Vector rotation : " << vR;
+
+    std::cout << "Matrix rotaiton : " << Mat3x3::Rotation(M_PI / 2) * vec;
     return 0;
 }

@@ -4,14 +4,17 @@
 #include <ostream>
 #include <cmath>
 #include <type_traits>
+#include <compare>
 
 template<typename T> concept C1 = std::is_same<T, float>::value || std::is_same<T, double>::value;
 
 template<C1 T>
 class _Vec2 {
 public:
+    _Vec2() noexcept : x(0), y(0) {}
     _Vec2(T x, T y) noexcept : x(x), y(y) {}
-    _Vec2(std::initializer_list<T> list) noexcept : x(*list.begin()), y(*(list.begin() + 1)) {}
+    _Vec2(std::initializer_list<T> list) noexcept
+        : x(static_cast<T>(*list.begin())), y(static_cast<T>(*(list.begin() + 1))) {}
     template<C1 E>
     _Vec2(const _Vec2<E>& v) noexcept : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
     template<C1 E>
@@ -36,42 +39,62 @@ public:
     _Vec2<T> operator-(const _Vec2<T>& v) noexcept {
         return _Vec2(*this).operator-=(v);
     }
-    _Vec2<T>& operator*=(T s) noexcept {
+    template<typename E>
+    _Vec2<T>& operator*=(E s) noexcept {
         x *= s;
         y *= s;
         return *this;
     }
-    _Vec2<T>& operator/=(T s) noexcept {
+    template<typename E>
+    _Vec2<T>& operator/=(E s) noexcept {
         x /= s;
         y /= s;
         return *this;
     }
-    _Vec2<T> operator*(T s) noexcept {
+    template<typename E>
+    _Vec2<T> operator*(E s) noexcept {
         return _Vec2(*this).operator*=(s);
     }
-    _Vec2<T> operator/(T s) noexcept {
+    template<typename E>
+    _Vec2<T> operator/(E s) noexcept {
         return _Vec2(*this).operator/=(s);
+    }
+    std::partial_ordering operator<=>(const _Vec2<T>& v) const noexcept {
+        using std::partial_ordering;
+        partial_ordering ox = x <=> v.x;
+        partial_ordering oy = y <=> v.y;
+        
+        if(ox == partial_ordering::equivalent && oy == partial_ordering::equivalent)
+            return partial_ordering::equivalent;
+        else if(ox != partial_ordering::greater || oy != partial_ordering::greater)
+            return partial_ordering::less;
+        else if((ox != partial_ordering::less && oy == partial_ordering::greater)
+             || (ox == partial_ordering::greater && oy != partial_ordering::less))
+            return partial_ordering::greater;
+        else
+            return partial_ordering::unordered;
     }
     bool operator==(const _Vec2<T>& v) const noexcept {
         return x == v.x && y == v.y;
     }
-    bool operator!=(const _Vec2<T>& v) const noexcept {
-        return x != v.x || y != v.y;
-    }
 
-    const T& GetX() const noexcept {
+    const T GetX() const noexcept {
         return x;
     }
-    const T& GetY() const noexcept {
+    const T GetY() const noexcept {
+        return y;
+    }
+    T& SetX() noexcept {
+        return x;
+    }
+    T& SetY() noexcept {
         return y;
     }
     T Magnitude() const noexcept {
         return std::sqrt((x * x) + (y * y));
     }
     void Normalise() noexcept {
-        T length = Magnitude();
-        x /= length;
-        y /= length;
+        *this /= Magnitude();
     }
     template<C1 E>
     void Rotate(E angle) noexcept {
