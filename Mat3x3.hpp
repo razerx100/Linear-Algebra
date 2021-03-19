@@ -100,14 +100,38 @@ public:
     }
 
     template<flot E>
-    static _Mat3x3<E> Rotation(E angle) noexcept {
+    static _Mat3x3<E> RotationZ(E angle) noexcept {
         E sine = std::sin(angle);
         E cosine = std::cos(angle);
 
         return _Mat3x3<E>{
-            cosine, -sine, static_cast<E>(0),
-            sine, cosine, static_cast<E>(0),
+            cosine, sine, static_cast<E>(0),
+            -sine, cosine, static_cast<E>(0),
             static_cast<E>(0), static_cast<E>(0), static_cast<E>(1)
+        };
+    }
+
+    template<flot E>
+    static _Mat3x3<E> RotationX(E angle) noexcept {
+        E sine = std::sin(angle);
+        E cosine = std::cos(angle);
+
+        return _Mat3x3<E>{
+            static_cast<E>(1), static_cast<E>(0), static_cast<E>(0),
+            static_cast<E>(0), cosine, sine,
+            static_cast<E>(0), -sine, cosine
+        };
+    }
+
+    template<flot E>
+    static _Mat3x3<E> RotationY(E angle) noexcept {
+        E sine = std::sin(angle);
+        E cosine = std::cos(angle);
+
+        return _Mat3x3<E>{
+            cosine, static_cast<E>(0), sine,
+            static_cast<E>(0),  static_cast<E>(1), static_cast<E>(0),
+            -sine, static_cast<E>(0), cosine
         };
     }
 
@@ -127,6 +151,15 @@ public:
             static_cast<T>(0), static_cast<T>(1), static_cast<T>(v.GetY()),
             static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
         };
+    }
+
+    static _Mat3x3<T> Transpose(const _Mat3x3<T>& v) noexcept {
+        _Mat3x3<T> inversed;
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++)
+                inversed.values[j * 3 + i] = v.values[i * 3 + j];
+        }
+        return inversed;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const _Mat3x3& mat){
